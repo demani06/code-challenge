@@ -6,7 +6,7 @@ public class TransactionRequest {
     @NotNull
     private String amount;
     @NotNull
-    private String timeStamp;
+    private String timestamp;
 
     public String getAmount() {
         return amount;
@@ -16,11 +16,11 @@ public class TransactionRequest {
         this.amount = amount;
     }
 
-    public String getTimeStamp() {
-        return timeStamp;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 }

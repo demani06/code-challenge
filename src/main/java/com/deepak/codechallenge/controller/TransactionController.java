@@ -1,6 +1,7 @@
 package com.deepak.codechallenge.controller;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import javax.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,20 +44,19 @@ public class TransactionController {
 
         //Basic mandatory Validation fails with @Valid annotation and returns 400
 
-        //TODO validations like date not parseable or transaction date in future can be moved to a Validator class
         TransactionDTO transactionDTO = getTransactionDTOFromRequest(transactionRequest);
 
         HttpHeaders responseHeaders = new HttpHeaders();
 
         if(transactionDTO==null){ //Some exception when parsing the amount and date fields
-            return new ResponseEntity<String>("Parsing failed", responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<String>("Parsing failed or transaction date is a future date", responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        boolean isTransactionOlder = transactionService.persistTransaction(transactionDTO);
+        boolean isTransactionOlderThan60Secs = transactionService.persistTransaction(transactionDTO);
 
 
 
-        if(isTransactionOlder){
+        if(isTransactionOlderThan60Secs){
             //Return 204 response code
             return new ResponseEntity<String>("Successfully created the transaction", responseHeaders, HttpStatus.NO_CONTENT);
         }
@@ -70,7 +71,7 @@ public class TransactionController {
      * method to map request to the DTO
      **/
     private TransactionDTO getTransactionDTOFromRequest(TransactionRequest transactionRequest){
-        logger.debug("getTransactionDTOFromRequest methdod, transactionRequest= {}",transactionRequest );
+        logger.debug("getTransactionDTOFromRequest method, transactionRequest= {}",transactionRequest );
 
         //TODO can use builder
         TransactionDTO transactionDTO = new TransactionDTO();
@@ -79,11 +80,20 @@ public class TransactionController {
 
         try{
             amount = new BigDecimal(transactionRequest.getAmount());
-            zonedDateTime = ZonedDateTime.parse(transactionRequest.getTimeStamp());
-        }catch(Exception exeption){
+            zonedDateTime = ZonedDateTime.parse(transactionRequest.getTimestamp());
+        }catch(Exception exception){
             //Any parsing exceptions we return null object and return the valid code in the controller
             //We can either use the Controller Advise and do the response re direction with the required status code
-            logger.error("Parsing Exception , e ="+exeption);
+            logger.error("Parsing Exception , e ="+exception);
+            return null;
+        }
+
+        ZonedDateTime zonedDateTimeNow = ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Z"));
+
+        //If it is a transaction future date, return 422 status code
+        if(!StringUtils.isEmpty(zonedDateTime) && zonedDateTime.isAfter(zonedDateTimeNow)){
+            logger.error("Future transaction dates are not allowed!");
+             return null;
         }
 
         transactionDTO.setAmount(amount);

@@ -1,25 +1,22 @@
 package com.deepak.codechallenge.service;
+
+import com.deepak.codechallenge.domain.StatisticsDTO;
+import com.deepak.codechallenge.domain.TransactionDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
-
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import com.deepak.codechallenge.domain.StatisticsDTO;
-import com.deepak.codechallenge.domain.TransactionDTO;
-import org.springframework.stereotype.Service;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 //@Slf4j
 @Service
@@ -39,11 +36,16 @@ public class TransactionService {
 
         transactionMap.put(random.nextLong(), transactionDTO);
 
-        logger.info("Peristed to Map, ",transactionDTO.getTimeStamp());
+        logger.info("Persisted to Map, ",transactionDTO.getTimeStamp());
 
-        //TODO compare the timestap with current time and return true only if the difference is less than 60
-
-        return false;
+        //TODO compare the timestamp with current time and return true only if the difference is less than 60
+        Duration timeDiff = Duration.between(transactionDTO.getTimeStamp(), ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Z")));
+        logger.info("time difference between current time and the transaction time stamp ={}", timeDiff);
+        boolean isTransactionOlderThan60Secs = false;
+        if(timeDiff.getSeconds() > 60){
+            isTransactionOlderThan60Secs = true;
+        }
+        return isTransactionOlderThan60Secs;
     }
 
 
