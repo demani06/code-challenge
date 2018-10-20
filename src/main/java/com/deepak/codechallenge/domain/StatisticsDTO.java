@@ -4,41 +4,41 @@ import java.math.BigDecimal;
 
 public class StatisticsDTO {
 
-    private BigDecimal sum;
-    private BigDecimal avg;
-    private BigDecimal max;
-    private BigDecimal min;
+    private String sum="0.00";
+    private String avg="0.00";
+    private String max ="0.00";
+    private String min="0.00";
     private long count;
 
-    public BigDecimal getSum() {
+    public String getSum() {
         return sum;
     }
 
-    public void setSum(BigDecimal sum) {
+    public void setSum(String sum) {
         this.sum = sum;
     }
 
-    public BigDecimal getAvg() {
+    public String getAvg() {
         return avg;
     }
 
-    public void setAvg(BigDecimal avg) {
+    public void setAvg(String avg) {
         this.avg = avg;
     }
 
-    public BigDecimal getMax() {
+    public String getMax() {
         return max;
     }
 
-    public void setMax(BigDecimal max) {
+    public void setMax(String max) {
         this.max = max;
     }
 
-    public BigDecimal getMin() {
+    public String getMin() {
         return min;
     }
 
-    public void setMin(BigDecimal min) {
+    public void setMin(String min) {
         this.min = min;
     }
 

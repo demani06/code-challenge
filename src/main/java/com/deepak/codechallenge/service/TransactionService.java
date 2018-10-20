@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -42,7 +43,7 @@ public class TransactionService {
         Duration timeDiff = Duration.between(transactionDTO.getTimeStamp(), ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Z")));
         logger.info("time difference between current time and the transaction time stamp ={}", timeDiff);
         boolean isTransactionOlderThan60Secs = false;
-        if(timeDiff.getSeconds() > 60){
+        if(timeDiff.getSeconds() >= 60){
             isTransactionOlderThan60Secs = true;
         }
         return isTransactionOlderThan60Secs;
@@ -79,7 +80,7 @@ public class TransactionService {
                 values().
                 stream().
                 filter(transactionDTO -> Duration.between(transactionDTO.getTimeStamp(), ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Z"))).getSeconds()< 60).
-                min(Comparator.comparing(transactionDTO-> transactionDTO.getTimeStamp())).orElse(new TransactionDTO());
+                min(Comparator.comparing(transactionDTO-> transactionDTO.getAmount())).orElse(new TransactionDTO());
 
         BigDecimal min = null;
         if(!StringUtils.isEmpty(transactionDTOOptional.getAmount())){
@@ -93,7 +94,7 @@ public class TransactionService {
                 values().
                 stream().
                 filter(transactionDTO -> Duration.between(transactionDTO.getTimeStamp(), ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Z"))).getSeconds()< 60).
-                max(Comparator.comparing(transactionDTO-> transactionDTO.getTimeStamp())).orElse(new TransactionDTO());
+                max(Comparator.comparing(transactionDTO-> transactionDTO.getAmount())).orElse(new TransactionDTO());
 
         BigDecimal max = null;
         if(!StringUtils.isEmpty(transactionDTOOptionalForMAx.getAmount())){
@@ -113,13 +114,25 @@ public class TransactionService {
 
         StatisticsDTO statisticsDTO = new StatisticsDTO();
         statisticsDTO.setCount(count);
-        statisticsDTO.setAvg(average);
-        statisticsDTO.setMax(max);
-        statisticsDTO.setMin(min);
-        statisticsDTO.setSum(sum);
+        if(!StringUtils.isEmpty(average))
+            statisticsDTO.setAvg(average.toString());
+        if(!StringUtils.isEmpty(max))
+            statisticsDTO.setMax(getStringInDecimalFormat(max));
+        if(!StringUtils.isEmpty(min))
+            statisticsDTO.setMin(getStringInDecimalFormat(min));
+        if(!StringUtils.isEmpty(sum))
+            statisticsDTO.setSum(getStringInDecimalFormat(sum));
 
         return statisticsDTO;
 
+    }
+
+
+    private static String getStringInDecimalFormat(BigDecimal bigDecimalInput){
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String strDouble = String.format("%.2f", 2.00023);
+        //return decimalFormat.format(bigDecimalInput.doubleValue());
+        return String.format("%.2f", bigDecimalInput.doubleValue());
     }
 
 
