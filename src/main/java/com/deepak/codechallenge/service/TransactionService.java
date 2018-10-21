@@ -27,7 +27,7 @@ public class TransactionService {
     //In Ideal case @Sl4j gives a log variable which is not working and hence initating the logger explictly
     private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
-    //ConcurrentHashMap is chosen to avoid multithreading problems
+    //ConcurrentHashMap is chosen to avoid multithreading problems and also can give O(1) for both get and put methods
     static Map<Long,TransactionDTO> transactionMap= new ConcurrentHashMap<>();
 
     public boolean persistTransaction(TransactionDTO transactionDTO){
