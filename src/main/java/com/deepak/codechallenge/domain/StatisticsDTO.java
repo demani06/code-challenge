@@ -10,6 +10,17 @@ public class StatisticsDTO {
     private String min="0.00";
     private long count;
 
+    public StatisticsDTO() {
+    }
+
+    public StatisticsDTO(String sum, String avg, String max, String min, long count) {
+        this.sum = sum;
+        this.avg = avg;
+        this.max = max;
+        this.min = min;
+        this.count = count;
+    }
+
     public String getSum() {
         return sum;
     }

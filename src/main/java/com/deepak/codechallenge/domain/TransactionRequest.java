@@ -8,6 +8,14 @@ public class TransactionRequest {
     @NotNull
     private String timestamp;
 
+    public TransactionRequest() {
+    }
+
+    public TransactionRequest(@NotNull String amount, @NotNull String timestamp) {
+        this.amount = amount;
+        this.timestamp = timestamp;
+    }
+
     public String getAmount() {
         return amount;
     }
