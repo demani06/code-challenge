@@ -142,6 +142,11 @@ public class TransactionService {
         logger.info("Map clear");
     }
 
+    public int getMapSize(){
+        logger.info("getMapSize");
+        return transactionMap.size();
+    }
+
 
 }
 
